@@ -6,6 +6,8 @@ import type { ReportStore } from '../report/report-store.js';
 import { runTestsSchema } from '../schemas/tools.js';
 import { runPlaywrightTests } from '@sentinel-ai/playwright-runner';
 import type { TestInput, RunResult } from '@sentinel-ai/playwright-runner';
+import { runMaestroTests } from '@sentinel-ai/maestro-bridge';
+import type { MaestroTestInput } from '@sentinel-ai/maestro-bridge';
 import { validateEvents } from '../event-validation/index.js';
 import type { CapturedEvent, EventValidationResult } from '../event-validation/index.js';
 import { logger } from '../utils/logger.js';
@@ -165,22 +167,79 @@ export function registerRunTests(
       };
     }
 
-    // Flutter (Maestro) — stub for Step 4
+    // Flutter (Maestro)
     if (targetPlatform === 'ios' || targetPlatform === 'android') {
-      return {
-        content: [{
-          type: 'text' as const,
-          text: JSON.stringify({
-            app_id,
+      const maestroInputs: MaestroTestInput[] = filteredTests.map((t) => ({
+        id: t.id,
+        title: t.title,
+        yaml: t.code,
+      }));
+
+      logger.info(`Running ${maestroInputs.length} Maestro tests for app: ${app_id} on ${targetPlatform}`);
+
+      try {
+        const maestroResult = await runMaestroTests(maestroInputs, {
+          signal: undefined,
+          onProgress: (current, total, testTitle) => {
+            logger.info(`[${current}/${total}] Running: ${testTitle}`);
+          },
+        });
+
+        // Record run results
+        for (const testResult of maestroResult.tests) {
+          await statusStore.recordRun(app_id, testResult.id, testResult.status === 'passed');
+        }
+
+        // Save report
+        let reportPath: string | undefined;
+        try {
+          const runResult: RunResult = {
+            passed: maestroResult.passed,
+            failed: maestroResult.failed,
+            skipped: 0,
+            timedOut: 0,
+            total: maestroResult.total,
+            duration: maestroResult.duration,
+            tests: maestroResult.tests.map((t) => ({
+              id: t.id,
+              title: t.title,
+              status: t.status === 'cancelled' ? 'skipped' as const : t.status,
+              duration: t.duration,
+              error: t.error,
+            })),
+          };
+          reportPath = await reportStore.save(runResult, {
+            appId: app_id,
             suite: suite ?? 'all',
             platform: targetPlatform,
-            total: filteredTests.length,
-            passed: filteredTests.length,
-            failed: 0,
-            status: 'stub — Maestro runner not yet connected (Step 4)',
-          }, null, 2),
-        }],
-      };
+          });
+        } catch (err) {
+          logger.warn('Failed to save report:', err);
+        }
+
+        return {
+          content: [{
+            type: 'text' as const,
+            text: JSON.stringify({
+              app_id,
+              suite: suite ?? 'all',
+              platform: targetPlatform,
+              ...maestroResult,
+              report_path: reportPath,
+            }, null, 2),
+          }],
+        };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        logger.error(`Maestro test execution failed: ${message}`);
+        return {
+          content: [{
+            type: 'text' as const,
+            text: `Maestro test execution failed: ${message}`,
+          }],
+          isError: true,
+        };
+      }
     }
 
     // No specific platform — return stub

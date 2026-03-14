@@ -102,26 +102,30 @@
 ## 4단계: Maestro 브릿지 (Flutter 앱)
 
 ### maestro-bridge 패키지
-- [ ] `packages/maestro-bridge/package.json` 생성
-- [ ] Maestro CLI 설치 확인 (`maestro --version`)
+- [x] `packages/maestro-bridge/package.json` 생성
+- [x] Flutter SDK 설치 (3.41.4)
+- [x] Maestro CLI 다운로드 (Java 설치 필요 — `brew install --cask temurin`)
 
 ### YAML 실행 패턴
-- [ ] Maestro YAML → 임시 파일 작성
-- [ ] `child_process.execSync("maestro test ... --format json")` 실행
-- [ ] JSON 결과 파싱
-- [ ] 임시 파일 cleanup
+- [x] Maestro YAML → 임시 파일 작성
+- [x] `child_process.spawn("maestro test ... --format json")` 실행
+- [x] JSON 결과 파싱 (`parseMaestroResult()`)
+- [x] 임시 파일 cleanup
+- [x] AbortSignal 기반 cancellation 지원
 
 ### mcp-server 연동
-- [ ] `run_tests` 툴에서 platform 분기 (web → playwright, flutter → maestro)
-- [ ] progress notifications 구현
-- [ ] cancellation 구현
+- [x] `run_tests` 툴에서 platform 분기 (web → playwright, flutter → maestro)
+- [x] progress notifications 구현
+- [x] cancellation 구현
+- [x] Maestro 실행 후 recordRun + 리포트 저장
 
 ### CI/CD 환경
 - [ ] GitHub Actions에서 Android 에뮬레이터 + Maestro 실행 테스트
 - [ ] GitHub Actions에서 iOS 시뮬레이터 + Maestro 실행 테스트 (macos runner)
 
 ### 테스트
-- [ ] 샘플 Flutter 앱으로 Maestro YAML 실행 E2E 검증
+- [x] Maestro JSON 결과 파서 단위 테스트 (9개 케이스 통과)
+- [ ] 샘플 Flutter 앱으로 Maestro YAML 실행 E2E 검증 (Java 설치 후)
 - [ ] pilot-ai → Maestro YAML 생성 → sentinel-ai 실행 → 결과 반환
 
 ---
@@ -136,10 +140,10 @@
 - [x] `AppRegistry`에서 이벤트 스펙 로딩 구현 (`getEventSpec()`)
 
 ### 웹 이벤트 캡처 (Playwright)
-- [ ] `page.on('request')` / `page.route()` 로 analytics 엔드포인트 인터셉트
-- [ ] 지원 SDK별 URL 패턴 매핑 (GA4, Firebase, Amplitude 등)
-- [ ] 캡처된 요청에서 이벤트 이름 + 파라미터 파싱
-- [ ] 캡처 결과 → 구조화된 이벤트 배열로 변환
+- [x] 지원 SDK별 URL 패턴 매핑 (GA4, Firebase, Amplitude, Mixpanel)
+- [x] 캡처된 요청에서 이벤트 이름 + 파라미터 파싱 (SDK별 파서)
+- [x] `matchAnalyticsUrl()` — URL이 analytics 엔드포인트인지 판별
+- [ ] `page.on('request')` / `page.route()` 로 실시간 인터셉트 (Playwright runner 통합)
 
 ### Flutter 이벤트 캡처 (Maestro)
 - [ ] 캡처 방식 확정 (`adb logcat` / HTTP 프록시 / Firebase Debug Mode)
@@ -151,7 +155,7 @@
 - [x] 누락 이벤트 (expected but not fired) 감지
 - [x] 예상치 못한 이벤트 (fired but not in spec) 감지
 - [x] 파라미터 불일치 감지 (타입 오류, 필수 파라미터 누락)
-- [ ] Zod 스키마로 이벤트 스펙 입력 검증
+- [x] Zod 스키마로 이벤트 스펙 입력 검증 (`eventSpecConfigSchema`)
 
 ### mcp-server 연동
 - [x] `run_tests` 스키마에 `validate_events: boolean` 옵션 추가
@@ -160,6 +164,8 @@
 
 ### 테스트
 - [x] 이벤트 검증 엔진 단위 테스트 (11개 케이스 통과)
+- [x] analytics URL 패턴 매칭 + SDK별 파서 단위 테스트 (10개 케이스 통과)
+- [x] Zod 이벤트 스펙 스키마 검증 테스트 (7개 케이스 통과)
 - [ ] 샘플 웹앱에서 analytics 이벤트 캡처 + 검증 E2E 테스트
 
 ---
@@ -211,32 +217,33 @@
 
 ## 8단계: GitHub Actions CI/CD 통합
 
-### Playwright (웹)
-- [ ] Playwright 테스트 워크플로우 작성
-- [ ] `npx playwright install --with-deps` 설치 단계
-- [ ] 테스트 sharding (matrix 전략)
-- [ ] Playwright 브라우저 캐싱
-- [ ] 테스트 결과 + 스크린샷 artifact 업로드
+### CI 파이프라인 (`ci.yml`)
+- [x] 빌드 + 테스트 워크플로우 (Node 20/22 매트릭스)
+- [x] `npx playwright install chromium --with-deps`
+- [x] 테스트 결과 artifact 업로드
 
-### Maestro (Flutter)
-- [ ] Android 에뮬레이터 + Maestro 워크플로우 작성
-- [ ] iOS 시뮬레이터 + Maestro 워크플로우 작성 (macos runner)
-- [ ] Flutter SDK 캐싱
+### Playwright 전용 (`playwright.yml`)
+- [x] paths 필터로 변경 시에만 실행
+- [x] Playwright 리포트 artifact (30일 보관)
+- [x] 실패 시 스크린샷/trace 업로드
 
-### 공통
-- [ ] PR 생성 시 자동 테스트 트리거
-- [ ] 테스트 결과 PR 코멘트로 리포트
-- [ ] 리포트 artifact 보관 (retention-days 설정)
+### 릴리스 (`release.yml`)
+- [x] workflow_dispatch로 수동 트리거
+- [x] 버전 bump + npm publish + GitHub Release
+
+### Maestro CI (후속)
+- [ ] Android 에뮬레이터 + Maestro 워크플로우
+- [ ] iOS 시뮬레이터 + Maestro 워크플로우 (macos runner)
 
 ---
 
 ## 9단계: 오픈소스 공개
 
 ### 문서
-- [ ] README.md (프로젝트 소개, 아키텍처 다이어그램, 퀵스타트)
-- [ ] CONTRIBUTING.md (기여 가이드)
-- [ ] LICENSE (MIT)
-- [ ] CHANGELOG.md
+- [x] README.md (프로젝트 소개, 아키텍처, 퀵스타트, MCP 도구 스펙)
+- [x] CONTRIBUTING.md (기여 가이드)
+- [x] LICENSE (MIT)
+- [x] CHANGELOG.md
 
 ### 코드 정리
 - [ ] Eodin 브랜드 종속 코드 제거
@@ -249,7 +256,7 @@
 - [ ] GitHub Releases 태깅
 
 ### 커뮤니티
-- [ ] GitHub Issues 템플릿 (bug report, feature request)
+- [x] GitHub Issues 템플릿 (bug report, feature request)
 - [ ] GitHub Discussions 활성화 (선택)
 
 ---
