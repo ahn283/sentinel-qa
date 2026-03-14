@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature for sentinel-ai
+about: Suggest a new feature for sentinel-qa
 title: "[Feature] "
 labels: enhancement
 ---

@@ -35,7 +35,7 @@ async function main() {
   const statusStore = new TestStatusStore(testsDir);
 
   const server = new McpServer({
-    name: 'sentinel-ai',
+    name: 'sentinel-qa',
     version: '0.1.0',
   });
 
@@ -48,7 +48,7 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  logger.info('sentinel-ai MCP server started (stdio)');
+  logger.info('sentinel-qa MCP server started (stdio)');
 }
 
 main().catch((err) => {

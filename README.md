@@ -1,13 +1,13 @@
-# sentinel-ai
+# sentinel-qa
 
 MCP server for AI-powered QA automation. Executes Playwright (web) and Maestro (Flutter) tests, validates analytics events, and generates reports — all orchestrated via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
-> sentinel-ai contains no LLM calls. It is purely test execution infrastructure designed to be driven by an AI agent like [pilot-ai](https://github.com/eodin/pilot-ai).
+> sentinel-qa contains no LLM calls. It is purely test execution infrastructure designed to be driven by an AI agent like [pilot-ai](https://github.com/eodin/pilot-ai).
 
 ## Architecture
 
 ```
-pilot-ai (LLM) ──stdio──> sentinel-ai (MCP Server)
+pilot-ai (LLM) ──stdio──> sentinel-qa (MCP Server)
                               ├── Playwright (web E2E tests)
                               ├── Maestro (Flutter E2E tests)
                               ├── Data Log QA (analytics event validation)
@@ -26,7 +26,7 @@ npm run build
 node packages/mcp-server/dist/index.js
 
 # Or via npx (after npm publish)
-npx sentinel-ai
+npx sentinel-qa
 ```
 
 ### Configure in your MCP client
@@ -34,9 +34,9 @@ npx sentinel-ai
 ```json
 {
   "mcpServers": {
-    "sentinel-ai": {
+    "sentinel-qa": {
       "command": "npx",
-      "args": ["sentinel-ai"]
+      "args": ["sentinel-qa"]
     }
   }
 }
@@ -93,7 +93,7 @@ npx sentinel-ai
 ## Project Structure
 
 ```
-sentinel-ai/
+sentinel-qa/
   packages/
     mcp-server/           # MCP server (entry point)
     playwright-runner/    # Playwright web test runner

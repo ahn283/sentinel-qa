@@ -1,5 +1,5 @@
 {
-  "name": "@sentinel-ai/maestro-bridge",
+  "name": "@sentinel-qa/maestro-bridge",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",

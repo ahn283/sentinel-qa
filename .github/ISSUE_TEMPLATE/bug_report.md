@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug in sentinel-ai
+about: Report a bug in sentinel-qa
 title: "[Bug] "
 labels: bug
 ---
@@ -27,7 +27,7 @@ What actually happened.
 
 - Node.js version:
 - OS:
-- sentinel-ai version:
+- sentinel-qa version:
 
 ## Additional Context
 

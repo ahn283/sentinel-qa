@@ -1,6 +1,6 @@
-# Contributing to sentinel-ai
+# Contributing to sentinel-qa
 
-Thank you for your interest in contributing to sentinel-ai!
+Thank you for your interest in contributing to sentinel-qa!
 
 ## Getting Started
 
@@ -58,7 +58,7 @@ node scripts/verify-mcp-flow.mjs     # E2E verification
 
 ## Reporting Issues
 
-Please use [GitHub Issues](https://github.com/eodin/sentinel-ai/issues) with:
+Please use [GitHub Issues](https://github.com/eodin/sentinel-qa/issues) with:
 - Steps to reproduce
 - Expected vs actual behavior
 - Node.js version and OS

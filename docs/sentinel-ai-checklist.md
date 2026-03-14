@@ -1,6 +1,6 @@
-# sentinel-ai 개발 체크리스트
+# sentinel-qa 개발 체크리스트
 
-> 기준 문서: `docs/sentinel-ai-planning.md`
+> 기준 문서: `docs/sentinel-qa-planning.md`
 > 생성일: 2026-03-14
 
 ---
@@ -79,9 +79,9 @@
 ## 3단계: pilot-ai 연동 검증
 
 ### pilot-ai 설정
-- [x] pilot-ai `mcpServers` 설정에 sentinel-ai 추가 (`~/.pilot/mcp-config.json`)
-- [x] pilot-ai MCP registry에 sentinel-ai 엔트리 추가
-- [x] sentinel-ai MCP 서버 initialize 응답 확인
+- [x] pilot-ai `mcpServers` 설정에 sentinel-qa 추가 (`~/.pilot/mcp-config.json`)
+- [x] pilot-ai MCP registry에 sentinel-qa 엔트리 추가
+- [x] sentinel-qa MCP 서버 initialize 응답 확인
 
 ### E2E 플로우 검증
 - [x] MCP E2E 검증 스크립트 작성 (`scripts/verify-mcp-flow.mjs`)
@@ -95,7 +95,7 @@
 
 ### 연동 문서
 - [x] pilot-ai 팀 연동 가이드 작성 (`docs/pilot-ai-integration-guide.md`)
-- [x] sentinel-ai 업데이트 시 pilot-ai 대응 가이드 포함
+- [x] sentinel-qa 업데이트 시 pilot-ai 대응 가이드 포함
 
 ---
 
@@ -126,7 +126,7 @@
 ### 테스트
 - [x] Maestro JSON 결과 파서 단위 테스트 (9개 케이스 통과)
 - [ ] 샘플 Flutter 앱으로 Maestro YAML 실행 E2E 검증 (Java 설치 후)
-- [ ] pilot-ai → Maestro YAML 생성 → sentinel-ai 실행 → 결과 반환
+- [ ] pilot-ai → Maestro YAML 생성 → sentinel-qa 실행 → 결과 반환
 
 ---
 
@@ -252,7 +252,7 @@
 
 ### npm 배포
 - [ ] `npm publish` 테스트 (dry-run)
-- [ ] `npx sentinel-ai` 설치 → 실행 E2E 검증
+- [ ] `npx sentinel-qa` 설치 → 실행 E2E 검증
 - [ ] GitHub Releases 태깅
 
 ### 커뮤니티

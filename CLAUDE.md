@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-sentinel-ai is an MCP (Model Context Protocol) server for QA automation. It receives test cases from pilot-ai (which handles LLM/AI logic) and executes them via Playwright (web) and Maestro (Flutter). It also performs **data log QA** — capturing analytics events (Firebase, Amplitude, etc.) during E2E test runs and validating them against predefined specs. sentinel-ai contains no LLM calls — it is purely test execution infrastructure.
+sentinel-qa is an MCP (Model Context Protocol) server for QA automation. It receives test cases from pilot-ai (which handles LLM/AI logic) and executes them via Playwright (web) and Maestro (Flutter). It also performs **data log QA** — capturing analytics events (Firebase, Amplitude, etc.) during E2E test runs and validating them against predefined specs. sentinel-qa contains no LLM calls — it is purely test execution infrastructure.
 
 ## Build & Run
 
@@ -49,7 +49,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
 - **ESM only**: `"type": "module"` everywhere. Use `.js` extensions in imports (even for `.ts` files).
 - **Shebang required**: `dist/index.js` must start with `#!/usr/bin/env node` (handled by `postbuild` script).
 - **Zod 3.x**: MCP SDK compatibility. Do not upgrade to Zod 4.
-- **No LLM calls**: sentinel-ai never calls Claude API or any LLM. AI logic belongs in pilot-ai.
+- **No LLM calls**: sentinel-qa never calls Claude API or any LLM. AI logic belongs in pilot-ai.
 - **Input validation**: All MCP tool inputs validated via Zod schemas in `src/schemas/tools.ts`.
 
 ## Workflow
@@ -59,7 +59,7 @@ Always follow this sequence when making changes:
 1. **Develop** — write/edit code
 2. **Build** — `npm run build` and fix any compile errors
 3. **Test** — `npm run test` and fix any failures
-4. **Update checklist** — mark completed items in `docs/sentinel-ai-checklist.md`
+4. **Update checklist** — mark completed items in `docs/sentinel-qa-checklist.md`
 5. **Commit** — only after steps 1–4 pass
 
 Never skip steps or reorder. Do not commit code that doesn't build or pass tests.

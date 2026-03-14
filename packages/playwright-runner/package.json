@@ -1,5 +1,5 @@
 {
-  "name": "@sentinel-ai/playwright-runner",
+  "name": "@sentinel-qa/playwright-runner",
   "version": "0.1.0",
   "description": "Playwright web test runner with write-to-temp-file pattern",
   "type": "module",

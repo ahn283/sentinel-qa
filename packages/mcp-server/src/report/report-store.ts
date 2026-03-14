@@ -1,7 +1,7 @@
 import { mkdir, writeFile, readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
-import type { RunResult } from '@sentinel-ai/playwright-runner';
+import type { RunResult } from '@sentinel-qa/playwright-runner';
 import { generateMarkdownReport } from './markdown.js';
 import type { ReportMeta } from './markdown.js';
 import type { EventValidationResult } from '../event-validation/types.js';

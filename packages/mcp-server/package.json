@@ -1,15 +1,15 @@
 {
-  "name": "@ahn283/sentinel-ai",
+  "name": "sentinel-qa",
   "version": "0.0.1",
   "description": "MCP server for AI-powered QA automation infrastructure",
   "type": "module",
   "bin": {
-    "sentinel-ai": "./dist/index.js"
+    "sentinel-qa": "./dist/index.js"
   },
   "files": ["dist"],
   "bundleDependencies": [
-    "@sentinel-ai/playwright-runner",
-    "@sentinel-ai/maestro-bridge"
+    "@sentinel-qa/playwright-runner",
+    "@sentinel-qa/maestro-bridge"
   ],
   "scripts": {
     "build": "tsc",
@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
-    "@sentinel-ai/maestro-bridge": "*",
-    "@sentinel-ai/playwright-runner": "*",
+    "@sentinel-qa/maestro-bridge": "*",
+    "@sentinel-qa/playwright-runner": "*",
     "yaml": "^2.8.2",
     "zod": "^3.24.4"
   },

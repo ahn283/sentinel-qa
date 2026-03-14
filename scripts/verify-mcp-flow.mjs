@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * sentinel-ai MCP E2E Flow Verification Script
+ * sentinel-qa MCP E2E Flow Verification Script
  *
  * Tests the full MCP tool chain:
  *   initialize → list_apps → get_selectors → save_tests → run_tests → get_report
@@ -26,7 +26,7 @@ let fail = 0;
 
 async function main() {
   console.log('\n=========================================');
-  console.log(' sentinel-ai MCP E2E Flow Verification');
+  console.log(' sentinel-qa MCP E2E Flow Verification');
   console.log('=========================================\n');
 
   const child = spawn('node', [serverPath], {
@@ -85,7 +85,7 @@ async function main() {
 
   let resp = await waitForResponse();
   check('1. initialize', resp, (r) =>
-    r.result?.serverInfo?.name === 'sentinel-ai',
+    r.result?.serverInfo?.name === 'sentinel-qa',
   );
 
   // Send initialized notification
