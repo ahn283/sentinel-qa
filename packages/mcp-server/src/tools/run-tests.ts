@@ -1,6 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { TestStore } from '../store/test-store.js';
 import type { AppRegistry } from '../registry/registry.js';
+import type { ReportStore } from '../report/report-store.js';
 import { runTestsSchema } from '../schemas/tools.js';
 import { runPlaywrightTests } from '@sentinel-ai/playwright-runner';
 import type { TestInput, RunResult } from '@sentinel-ai/playwright-runner';
@@ -10,6 +11,7 @@ export function registerRunTests(
   server: McpServer,
   store: TestStore,
   registry: AppRegistry,
+  reportStore: ReportStore,
 ) {
   server.registerTool('run_tests', {
     description: 'Run tests for an app (long-running, supports progress notifications)',
@@ -71,9 +73,20 @@ export function registerRunTests(
         };
       }
 
-      // Build response with optional resource links for screenshots
-      const content: Array<{ type: 'text'; text: string } | { type: 'resource'; resource: { uri: string; mimeType: string; text: string } }> = [
-        {
+      // Save report to disk
+      let reportPath: string | undefined;
+      try {
+        reportPath = await reportStore.save(result, {
+          appId: app_id,
+          suite: suite ?? 'all',
+          platform: 'web',
+        });
+      } catch (err) {
+        logger.warn('Failed to save report:', err);
+      }
+
+      return {
+        content: [{
           type: 'text' as const,
           text: JSON.stringify({
             app_id,
@@ -86,11 +99,10 @@ export function registerRunTests(
             timedOut: result.timedOut,
             duration: result.duration,
             tests: result.tests,
+            report_path: reportPath,
           }, null, 2),
-        },
-      ];
-
-      return { content };
+        }],
+      };
     }
 
     // Flutter (Maestro) — stub for Step 4

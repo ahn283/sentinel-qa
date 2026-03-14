@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import { AppRegistry } from './registry/registry.js';
 import { TestStore } from './store/test-store.js';
+import { ReportStore } from './report/report-store.js';
 import { logger } from './utils/logger.js';
 
 import { registerListApps } from './tools/list-apps.js';
@@ -24,6 +25,10 @@ async function main() {
 
   const store = new TestStore();
 
+  const reportsDir =
+    process.env.SENTINEL_REPORTS_DIR ?? resolve(__dirname, '..', '..', '..', 'reports');
+  const reportStore = new ReportStore(reportsDir);
+
   const server = new McpServer({
     name: 'sentinel-ai',
     version: '0.1.0',
@@ -32,8 +37,8 @@ async function main() {
   registerListApps(server, registry);
   registerGetSelectors(server, registry);
   registerSaveTests(server, store);
-  registerRunTests(server, store, registry);
-  registerGetReport(server);
+  registerRunTests(server, store, registry, reportStore);
+  registerGetReport(server, reportStore);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

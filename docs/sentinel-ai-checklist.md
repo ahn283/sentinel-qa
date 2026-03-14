@@ -186,20 +186,23 @@
 
 ## 7단계: 리포트 + Telegram 알림
 
-### reporter 패키지
-- [ ] `packages/reporter/package.json` 생성
-- [ ] Allure 리포트 생성 연동
-- [ ] HTML 리포트 생성 (초기 단계)
-- [ ] 리포트 파일 저장 경로 관리
+### Markdown 리포트 (기본)
+- [x] Markdown 리포트 생성 모듈 구현 (`report/markdown.ts`)
+- [x] `reports/<app_id>/<timestamp>/report.md` 경로 구조
+- [x] JSON 원본 결과 동시 저장 (`result.json`)
+- [x] ReportStore — 리포트 저장/조회 모듈 (`report/report-store.ts`)
+- [x] `run_tests` 실행 후 자동 리포트 저장
+- [x] `get_report`에서 최신 Markdown 리포트 반환
+- [x] 리포트 생성 단위 테스트 (6개 케이스 통과)
+
+### Allure / HTML 리포트 (후속)
+- [ ] Allure 리포트 생성 연동 (선택)
+- [ ] HTML 리포트 생성 (선택)
 
 ### 알림 연동
 - [ ] Slack Webhook 알림 구현 (선택)
 - [ ] Telegram Bot 알림 구현 (선택)
 - [ ] 알림 포맷 정의 (통과/실패 요약, 링크)
-
-### mcp-server 연동
-- [ ] `get_report`에서 reporter 호출
-- [ ] 리포트 HTML을 `resource_link`로 반환
 
 ---
 

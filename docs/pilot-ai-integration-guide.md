@@ -67,7 +67,38 @@ sentinel-ai는 **API 키가 필요 없습니다**. 선택적 환경 변수:
 | 변수 | 설명 | 기본값 |
 |------|------|--------|
 | `SENTINEL_REGISTRY_DIR` | 앱 레지스트리 디렉토리 경로 | sentinel-ai 내 `registry/` |
+| `SENTINEL_REPORTS_DIR` | 리포트 저장 디렉토리 경로 | sentinel-ai 내 `reports/` |
 | `DEBUG` | 디버그 로그 활성화 | (미설정) |
+
+### 리포트 저장 구조
+
+`run_tests` 실행 시 Markdown + JSON 리포트가 자동 생성됩니다.
+
+```
+reports/
+  <app_id>/
+    <timestamp>/
+      report.md        # Markdown 리포트 (사람이 읽기 좋은 형태)
+      result.json      # JSON 원본 결과 (프로그래매틱 소비용)
+```
+
+예시:
+```
+reports/
+  arden-web/
+    2026-03-14T10-30-00-000Z/
+      report.md
+      result.json
+    2026-03-14T14-15-22-123Z/
+      report.md
+      result.json
+  fridgify/
+    2026-03-14T11-00-00-000Z/
+      report.md
+      result.json
+```
+
+`reports/` 디렉토리는 `.gitignore`에 포함되어 있어 커밋되지 않습니다.
 
 ---
 
@@ -185,18 +216,43 @@ sentinel-ai는 5개의 MCP 도구를 제공합니다.
       "error": "Expected element to be visible",
       "screenshotPath": "/tmp/screenshot-1.png"
     }
-  ]
+  ],
+  "report_path": "/path/to/sentinel-ai/reports/arden-web/2026-03-14T10-30-00-000Z/report.md"
 }
 ```
 
+> `run_tests` 실행 시 Markdown 리포트가 자동 생성되며, `report_path`에 파일 경로가 포함됩니다.
+
 ### 3.5. `get_report`
 
-최근 테스트 결과 요약을 반환합니다. (현재 스텁 — 7단계에서 구현 예정)
+최근 테스트 결과의 Markdown 리포트를 반환합니다.
 
 **Input**:
 ```json
 { "app_id": "arden-web" }
 ```
+
+**Output** (예시):
+
+첫 번째 `content` 항목은 JSON 요약, 두 번째는 Markdown 리포트 본문입니다.
+
+```json
+{
+  "app_id": "arden-web",
+  "report_path": "/path/to/reports/arden-web/2026-03-14T10-30-00-000Z/report.md",
+  "summary": {
+    "total": 2,
+    "passed": 1,
+    "failed": 1,
+    "skipped": 0,
+    "timedOut": 0,
+    "duration": 3500,
+    "timestamp": "2026-03-14T10-30-00-000Z"
+  }
+}
+```
+
+리포트가 없으면 `"status": "no reports available"` 응답을 반환합니다.
 
 ---
 

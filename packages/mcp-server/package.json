@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "postbuild": "printf '#!/usr/bin/env node\\n' | cat - dist/index.js > dist/index.tmp.js && mv dist/index.tmp.js dist/index.js && chmod 755 dist/index.js",
-    "test": "echo \"No tests yet\"",
+    "test": "node --test dist/__tests__/**/*.test.js",
     "lint": "echo \"No lint yet\""
   },
   "dependencies": {
