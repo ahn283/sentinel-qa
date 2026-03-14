@@ -1,12 +1,16 @@
 {
-  "name": "sentinel-ai",
-  "version": "0.1.0",
+  "name": "@ahn283/sentinel-ai",
+  "version": "0.0.1",
   "description": "MCP server for AI-powered QA automation infrastructure",
   "type": "module",
   "bin": {
     "sentinel-ai": "./dist/index.js"
   },
   "files": ["dist"],
+  "bundleDependencies": [
+    "@sentinel-ai/playwright-runner",
+    "@sentinel-ai/maestro-bridge"
+  ],
   "scripts": {
     "build": "tsc",
     "postbuild": "printf '#!/usr/bin/env node\\n' | cat - dist/index.js > dist/index.tmp.js && mv dist/index.tmp.js dist/index.js && chmod 755 dist/index.js",
