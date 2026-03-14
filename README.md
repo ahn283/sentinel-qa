@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ahn283/sentinel-qa/main/img/sentinel_qa.png" alt="Sentinel QA" width="480" />
+</p>
+
 # sentinel-qa
 
 MCP server for AI-powered QA automation. Executes Playwright (web) and Maestro (Flutter) tests, validates analytics events, and generates reports — all orchestrated via the [Model Context Protocol](https://modelcontextprotocol.io/).
