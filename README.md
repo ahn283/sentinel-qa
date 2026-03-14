@@ -2,9 +2,18 @@
   <img src="https://raw.githubusercontent.com/ahn283/sentinel-qa/main/img/sentinel_qa.png" alt="Sentinel QA" width="480" />
 </p>
 
-# sentinel-qa
+<p align="center">
+  <strong>MCP server for AI-powered QA automation — run Playwright & Maestro tests, validate analytics events, and generate reports.</strong>
+</p>
 
-MCP server for AI-powered QA automation. Executes Playwright (web) and Maestro (Flutter) tests, validates analytics events, and generates reports — all orchestrated via the [Model Context Protocol](https://modelcontextprotocol.io/).
+<p align="center">
+  <a href="https://www.npmjs.com/package/sentinel-qa"><img src="https://img.shields.io/npm/v/sentinel-qa.svg" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/sentinel-qa"><img src="https://img.shields.io/npm/dm/sentinel-qa.svg" alt="npm downloads" /></a>
+  <img src="https://img.shields.io/node/v/sentinel-qa.svg" alt="node version" />
+  <a href="https://github.com/ahn283/sentinel-qa/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/sentinel-qa.svg" alt="license" /></a>
+</p>
+
+---
 
 > sentinel-qa contains no LLM calls. It is purely test execution infrastructure designed to be driven by an AI agent like [pilot-ai](https://github.com/eodin/pilot-ai).
 
