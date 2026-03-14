@@ -1,0 +1,17 @@
+{
+  "name": "sentinel-ai-monorepo",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+  "type": "module",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.8.17",
+    "typescript": "^5.9.3",
+    "prettier": "^3.8.1"
+  }
+}

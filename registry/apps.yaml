@@ -1,0 +1,14 @@
+apps:
+  - id: fridgify
+    type: flutter
+    repo: github.com/eodin/fridgify
+    prd: notion://placeholder
+    context:
+      selectors: ./selectors/fridgify.yaml
+
+  - id: arden-web
+    type: web
+    url: https://arden.app
+    prd: notion://placeholder
+    context:
+      selectors: ./selectors/arden-web.yaml

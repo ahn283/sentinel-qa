@@ -1,0 +1,3 @@
+add_ingredient_button: "button[data-testid='addIngredient']"
+generate_button: "button[data-testid='generate']"
+recipe_card: ".recipe-card"

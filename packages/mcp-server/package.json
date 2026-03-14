@@ -1,0 +1,28 @@
+{
+  "name": "sentinel-ai",
+  "version": "0.1.0",
+  "description": "MCP server for AI-powered QA automation infrastructure",
+  "type": "module",
+  "bin": {
+    "sentinel-ai": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "printf '#!/usr/bin/env node\\n' | cat - dist/index.js > dist/index.tmp.js && mv dist/index.tmp.js dist/index.js && chmod 755 dist/index.js",
+    "test": "echo \"No tests yet\"",
+    "lint": "echo \"No lint yet\""
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "yaml": "^2.8.2",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
