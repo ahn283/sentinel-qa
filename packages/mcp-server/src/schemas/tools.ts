@@ -22,6 +22,8 @@ export const runTestsSchema = {
   app_id: z.string().describe('App ID'),
   suite: z.string().optional().describe('Test suite name'),
   platform: z.enum(['web', 'ios', 'android']).optional().describe('Target platform'),
+  validate_events: z.boolean().optional().describe('Enable data log QA — validate analytics events against spec (default: false)'),
+  include_quarantine: z.boolean().optional().describe('Include quarantined tests in execution (default: false)'),
 };
 
 export const getReportSchema = {

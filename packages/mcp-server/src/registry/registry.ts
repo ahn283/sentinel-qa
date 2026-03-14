@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { loadYaml } from '../utils/yaml-loader.js';
 import { logger } from '../utils/logger.js';
-import type { AppsConfig, AppEntry, SelectorMap } from './types.js';
+import type { AppsConfig, AppEntry, SelectorMap, EventSpecConfig } from './types.js';
 
 export class AppRegistry {
   private apps: AppEntry[] = [];
@@ -42,5 +42,17 @@ export class AppRegistry {
       return null;
     }
     return loadYaml<SelectorMap>(selectorPath);
+  }
+
+  async getEventSpec(appId: string): Promise<EventSpecConfig | null> {
+    const app = this.getApp(appId);
+    if (!app?.context?.event_spec) return null;
+
+    const specPath = resolve(this.registryDir, app.context.event_spec);
+    if (!existsSync(specPath)) {
+      logger.warn(`Event spec file not found: ${specPath}`);
+      return null;
+    }
+    return loadYaml<EventSpecConfig>(specPath);
   }
 }

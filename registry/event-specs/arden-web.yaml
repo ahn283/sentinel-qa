@@ -1,0 +1,20 @@
+events:
+  - trigger: "Page view"
+    event_name: page_view
+    required_params:
+      page_path: string
+      page_title: string
+
+  - trigger: "Button click"
+    event_name: button_click
+    required_params:
+      button_id: string
+      button_text: string
+    optional_params:
+      section: string
+
+  - trigger: "Form submit"
+    event_name: form_submit
+    required_params:
+      form_id: string
+      field_count: number

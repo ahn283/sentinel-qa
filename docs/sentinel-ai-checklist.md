@@ -129,11 +129,11 @@
 ## 5단계: 데이터 로그 QA (Analytics 이벤트 검증)
 
 ### 이벤트 스펙 관리
-- [ ] `registry/event-specs/` 디렉토리 생성
-- [ ] 이벤트 스펙 YAML 포맷 정의 (`event_name`, `required_params`, `optional_params`)
-- [ ] 샘플 이벤트 스펙 작성 (`registry/event-specs/fridgify.yaml`)
-- [ ] `apps.yaml`에 `event_spec` 필드 추가
-- [ ] `AppRegistry`에서 이벤트 스펙 로딩 구현
+- [x] `registry/event-specs/` 디렉토리 생성
+- [x] 이벤트 스펙 YAML 포맷 정의 (`event_name`, `required_params`, `optional_params`)
+- [x] 샘플 이벤트 스펙 작성 (`registry/event-specs/fridgify.yaml`, `arden-web.yaml`)
+- [x] `apps.yaml`에 `event_spec` 필드 추가
+- [x] `AppRegistry`에서 이벤트 스펙 로딩 구현 (`getEventSpec()`)
 
 ### 웹 이벤트 캡처 (Playwright)
 - [ ] `page.on('request')` / `page.route()` 로 analytics 엔드포인트 인터셉트
@@ -147,40 +147,43 @@
 - [ ] 캡처 결과 → 구조화된 이벤트 배열로 변환
 
 ### 스펙 대비 검증 로직
-- [ ] 캡처 이벤트 vs 스펙 diff 비교 엔진 구현
-- [ ] 누락 이벤트 (expected but not fired) 감지
-- [ ] 예상치 못한 이벤트 (fired but not in spec) 감지
-- [ ] 파라미터 불일치 감지 (타입 오류, 필수 파라미터 누락)
+- [x] 캡처 이벤트 vs 스펙 diff 비교 엔진 구현 (`event-validation/validator.ts`)
+- [x] 누락 이벤트 (expected but not fired) 감지
+- [x] 예상치 못한 이벤트 (fired but not in spec) 감지
+- [x] 파라미터 불일치 감지 (타입 오류, 필수 파라미터 누락)
 - [ ] Zod 스키마로 이벤트 스펙 입력 검증
 
 ### mcp-server 연동
-- [ ] `run_tests` 스키마에 `validate_events: boolean` 옵션 추가
-- [ ] `get_report` 응답에 `event_validation` 결과 포함
-- [ ] 이벤트 검증 결과 포맷 정의 (`matched`, `missing`, `unexpected`, `param_errors`)
+- [x] `run_tests` 스키마에 `validate_events: boolean` 옵션 추가
+- [x] `get_report` 응답에 `event_validation` 결과 포함 (Markdown 리포트에 섹션 추가)
+- [x] 이벤트 검증 결과 포맷 정의 (`matched`, `missing`, `unexpected`, `param_errors`)
 
 ### 테스트
+- [x] 이벤트 검증 엔진 단위 테스트 (11개 케이스 통과)
 - [ ] 샘플 웹앱에서 analytics 이벤트 캡처 + 검증 E2E 테스트
-- [ ] 누락/불일치 케이스 검증
 
 ---
 
 ## 6단계: 테스트 신뢰성 관리 (Quarantine)
 
 ### 상태 관리
-- [ ] `tests/<app_id>/status.yaml` 파일 구조 구현
-- [ ] 테스트 상태 CRUD (new → stable / quarantine / rejected)
-- [ ] pass_rate 계산 로직 (최근 5회 실행 기준)
+- [x] `TestStatusStore` 구현 (`tests/<app_id>/status.yaml` YAML 기반)
+- [x] 테스트 상태 CRUD (new → stable / quarantine / rejected)
+- [x] pass_rate 계산 로직 (최근 5회 실행 기준)
 
 ### 승격/강등 로직
-- [ ] 신규 테스트 5회 연속 실행 자동화
-- [ ] 5/5 통과 → stable 자동 승격
-- [ ] 3-4/5 통과 → quarantine + failure_reason 기록
-- [ ] 0-2/5 통과 → rejected 처리
+- [x] 5회 실행 후 자동 판정
+- [x] 5/5 통과 → stable 자동 승격
+- [x] 3-4/5 통과 → quarantine + failure_reason 기록
+- [x] 0-2/5 통과 → rejected 처리
 
 ### run_tests 연동
-- [ ] 기본 실행: stable 테스트만 포함
-- [ ] `include_quarantine` 옵션 추가
-- [ ] rejected 테스트 재생성 요청 응답 포맷 정의
+- [x] 기본 실행: stable + new 테스트만 포함, rejected 제외
+- [x] `include_quarantine` 옵션 추가
+- [x] 테스트 실행 후 `recordRun()` 자동 호출
+
+### 테스트
+- [x] TestStatusStore 단위 테스트 (17개 케이스 통과)
 
 ---
 

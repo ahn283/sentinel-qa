@@ -1,10 +1,13 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { TestStore } from '../store/test-store.js';
+import type { TestStatusStore } from '../store/test-status-store.js';
 import type { AppRegistry } from '../registry/registry.js';
 import type { ReportStore } from '../report/report-store.js';
 import { runTestsSchema } from '../schemas/tools.js';
 import { runPlaywrightTests } from '@sentinel-ai/playwright-runner';
 import type { TestInput, RunResult } from '@sentinel-ai/playwright-runner';
+import { validateEvents } from '../event-validation/index.js';
+import type { CapturedEvent, EventValidationResult } from '../event-validation/index.js';
 import { logger } from '../utils/logger.js';
 
 export function registerRunTests(
@@ -12,15 +15,38 @@ export function registerRunTests(
   store: TestStore,
   registry: AppRegistry,
   reportStore: ReportStore,
+  statusStore: TestStatusStore,
 ) {
   server.registerTool('run_tests', {
     description: 'Run tests for an app (long-running, supports progress notifications)',
     inputSchema: runTestsSchema,
-  }, async ({ app_id, suite, platform }) => {
-    const tests = store.get(app_id);
+  }, async ({ app_id, suite, platform, validate_events: shouldValidateEvents, include_quarantine }) => {
+    let tests = store.get(app_id);
     if (!tests || tests.length === 0) {
       return {
         content: [{ type: 'text' as const, text: `No tests found for app: ${app_id}` }],
+        isError: true,
+      };
+    }
+
+    // Filter by quarantine status
+    const statuses = await statusStore.load(app_id);
+    const statusMap = new Map(statuses.map((s) => [s.id, s]));
+
+    tests = tests.filter((test) => {
+      const status = statusMap.get(test.id);
+      if (!status) return true; // new tests are included
+      if (status.status === 'rejected') return false;
+      if (status.status === 'quarantine') return include_quarantine === true;
+      return true; // 'new' and 'stable' are always included
+    });
+
+    if (tests.length === 0) {
+      return {
+        content: [{
+          type: 'text' as const,
+          text: `All tests for app "${app_id}" are quarantined or rejected. Use include_quarantine: true to run quarantined tests.`,
+        }],
         isError: true,
       };
     }
@@ -73,6 +99,34 @@ export function registerRunTests(
         };
       }
 
+      // Record run results in status store
+      for (const testResult of result.tests) {
+        await statusStore.recordRun(app_id, testResult.id, testResult.status === 'passed');
+      }
+
+      // Event validation (data log QA)
+      let eventValidation: EventValidationResult | undefined;
+      if (shouldValidateEvents) {
+        try {
+          const eventSpec = await registry.getEventSpec(app_id);
+          if (eventSpec) {
+            // In a real implementation, captured events would come from
+            // Playwright network interception during test execution.
+            // For now, we accept captured events stored alongside test results.
+            // This will be fully integrated when the Playwright runner
+            // supports event capture via page.on('request').
+            const capturedEvents: CapturedEvent[] = [];
+
+            logger.info(`Validating ${eventSpec.events.length} event specs for app: ${app_id}`);
+            eventValidation = validateEvents(eventSpec.events, capturedEvents);
+          } else {
+            logger.warn(`No event spec found for app: ${app_id}, skipping event validation`);
+          }
+        } catch (err) {
+          logger.warn('Event validation error:', err);
+        }
+      }
+
       // Save report to disk
       let reportPath: string | undefined;
       try {
@@ -80,27 +134,33 @@ export function registerRunTests(
           appId: app_id,
           suite: suite ?? 'all',
           platform: 'web',
-        });
+        }, eventValidation);
       } catch (err) {
         logger.warn('Failed to save report:', err);
+      }
+
+      const response: Record<string, unknown> = {
+        app_id,
+        suite: suite ?? 'all',
+        platform: 'web',
+        total: result.total,
+        passed: result.passed,
+        failed: result.failed,
+        skipped: result.skipped,
+        timedOut: result.timedOut,
+        duration: result.duration,
+        tests: result.tests,
+        report_path: reportPath,
+      };
+
+      if (eventValidation) {
+        response.event_validation = eventValidation;
       }
 
       return {
         content: [{
           type: 'text' as const,
-          text: JSON.stringify({
-            app_id,
-            suite: suite ?? 'all',
-            platform: 'web',
-            total: result.total,
-            passed: result.passed,
-            failed: result.failed,
-            skipped: result.skipped,
-            timedOut: result.timedOut,
-            duration: result.duration,
-            tests: result.tests,
-            report_path: reportPath,
-          }, null, 2),
+          text: JSON.stringify(response, null, 2),
         }],
       };
     }

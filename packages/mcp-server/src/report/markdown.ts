@@ -1,4 +1,5 @@
 import type { RunResult, TestResult } from '@sentinel-ai/playwright-runner';
+import type { EventValidationResult } from '../event-validation/types.js';
 
 export interface ReportMeta {
   appId: string;
@@ -24,7 +25,11 @@ function formatDuration(ms: number): string {
 /**
  * Convert a RunResult into a Markdown report string.
  */
-export function generateMarkdownReport(result: RunResult, meta: ReportMeta): string {
+export function generateMarkdownReport(
+  result: RunResult,
+  meta: ReportMeta,
+  eventValidation?: EventValidationResult,
+): string {
   const lines: string[] = [];
 
   // Header
@@ -91,6 +96,67 @@ export function generateMarkdownReport(result: RunResult, meta: ReportMeta): str
       }
       if (test.screenshotPath) {
         lines.push(`- **Screenshot**: \`${test.screenshotPath}\``);
+      }
+      lines.push('');
+    }
+  }
+
+  // Event Validation (Data Log QA)
+  if (eventValidation) {
+    lines.push('## Event Validation (Data Log QA)');
+    lines.push('');
+    lines.push('| Expected | Matched | Missing | Param Errors | Unexpected |');
+    lines.push('|----------|---------|---------|--------------|------------|');
+    lines.push(`| ${eventValidation.total_expected} | ${eventValidation.matched} | ${eventValidation.missing} | ${eventValidation.param_errors} | ${eventValidation.unexpected_count} |`);
+    lines.push('');
+
+    if (eventValidation.missing === 0 && eventValidation.param_errors === 0 && eventValidation.unexpected_count === 0) {
+      lines.push('**Event Validation: ALL MATCHED**');
+    } else {
+      lines.push('**Event Validation: ISSUES FOUND**');
+    }
+    lines.push('');
+
+    // Event details table
+    lines.push('### Event Results');
+    lines.push('');
+    lines.push('| Event | Trigger | Status |');
+    lines.push('|-------|---------|--------|');
+
+    for (const ev of eventValidation.results) {
+      const statusLabel = ev.status === 'matched' ? 'MATCHED'
+        : ev.status === 'missing' ? 'MISSING'
+        : 'PARAM_ERROR';
+      lines.push(`| ${ev.event_name} | ${ev.trigger} | ${statusLabel} |`);
+    }
+    lines.push('');
+
+    // Param errors detail
+    const paramErrorResults = eventValidation.results.filter((r) => r.status === 'param_error');
+    if (paramErrorResults.length > 0) {
+      lines.push('### Parameter Errors');
+      lines.push('');
+
+      for (const ev of paramErrorResults) {
+        lines.push(`**${ev.event_name}**:`);
+        lines.push('');
+        lines.push('| Parameter | Expected | Got |');
+        lines.push('|-----------|----------|-----|');
+        for (const err of ev.param_errors ?? []) {
+          lines.push(`| ${err.param} | ${err.expected} | ${err.got} |`);
+        }
+        lines.push('');
+      }
+    }
+
+    // Unexpected events
+    if (eventValidation.unexpected.length > 0) {
+      lines.push('### Unexpected Events');
+      lines.push('');
+      lines.push('| Event | Params |');
+      lines.push('|-------|--------|');
+      for (const ev of eventValidation.unexpected) {
+        lines.push(`| ${ev.event_name} | ${JSON.stringify(ev.params)} |`);
       }
       lines.push('');
     }

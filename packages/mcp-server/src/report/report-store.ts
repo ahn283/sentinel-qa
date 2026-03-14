@@ -1,9 +1,10 @@
-import { mkdir, writeFile, readFile, readdir, stat } from 'node:fs/promises';
+import { mkdir, writeFile, readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import type { RunResult } from '@sentinel-ai/playwright-runner';
 import { generateMarkdownReport } from './markdown.js';
 import type { ReportMeta } from './markdown.js';
+import type { EventValidationResult } from '../event-validation/types.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -24,6 +25,7 @@ export class ReportStore {
   async save(
     result: RunResult,
     meta: Omit<ReportMeta, 'timestamp'>,
+    eventValidation?: EventValidationResult,
   ): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const fullMeta: ReportMeta = { ...meta, timestamp };
@@ -32,13 +34,17 @@ export class ReportStore {
     await mkdir(reportDir, { recursive: true });
 
     // Save Markdown report
-    const markdown = generateMarkdownReport(result, fullMeta);
+    const markdown = generateMarkdownReport(result, fullMeta, eventValidation);
     const mdPath = join(reportDir, 'report.md');
     await writeFile(mdPath, markdown, 'utf-8');
 
     // Save raw JSON alongside for programmatic access
     const jsonPath = join(reportDir, 'result.json');
-    await writeFile(jsonPath, JSON.stringify({ ...result, meta: fullMeta }, null, 2), 'utf-8');
+    const jsonData: Record<string, unknown> = { ...result, meta: fullMeta };
+    if (eventValidation) {
+      jsonData.event_validation = eventValidation;
+    }
+    await writeFile(jsonPath, JSON.stringify(jsonData, null, 2), 'utf-8');
 
     logger.info(`Report saved: ${mdPath}`);
     return mdPath;

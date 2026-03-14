@@ -1,0 +1,21 @@
+events:
+  - trigger: "Recipe generate button tap"
+    event_name: generate_recipe
+    required_params:
+      ingredient_count: number
+      source: string
+    optional_params:
+      recipe_type: string
+
+  - trigger: "Recipe result screen enter"
+    event_name: view_recipe_result
+    required_params:
+      recipe_id: string
+      load_time_ms: number
+
+  - trigger: "Ingredient add"
+    event_name: add_ingredient
+    required_params:
+      ingredient_name: string
+    optional_params:
+      category: string
